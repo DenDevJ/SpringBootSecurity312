@@ -37,6 +37,21 @@
             width: 100px;
             color: #555;
         }
+        .role-list {
+            display: inline;
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        .role-list li {
+            display: inline-block;
+            background-color: #2196F3;
+            color: white;
+            padding: 5px 10px;
+            border-radius: 3px;
+            margin: 2px;
+            font-size: 14px;
+        }
         .logout-btn {
             margin-top: 20px;
             padding: 12px;
@@ -52,6 +67,16 @@
         .logout-btn:hover {
             background-color: #da190b;
         }
+        .back-link {
+            display: block;
+            text-align: center;
+            margin-top: 15px;
+            color: #2196F3;
+            text-decoration: none;
+        }
+        .back-link:hover {
+            text-decoration: underline;
+        }
     </style>
 </head>
 <body>
@@ -62,12 +87,19 @@
         <p><strong>Name:</strong> <span th:text="${user.name}">User Name</span></p>
         <p><strong>Email:</strong> <span th:text="${user.email}">user@example.com</span></p>
         <p><strong>Age:</strong> <span th:text="${user.age}">25</span></p>
-        <p><strong>Roles:</strong> <span th:text="${user.roles}">ROLE_USER</span></p>
+        <p>
+            <strong>Roles:</strong>
+        <ul class="role-list">
+            <li th:each="role : ${user.roles}" th:text="${role.name}"></li>
+        </ul>
+        </p>
     </div>
 
     <form th:action="@{/logout}" method="post">
         <button type="submit" class="logout-btn">Logout</button>
     </form>
+
+    <a href="/admin" class="back-link" th:if="${#authorization.expression('hasRole(''ADMIN'')')}">Back to Admin Panel</a>
 </div>
 </body>
 </html>

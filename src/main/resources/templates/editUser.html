@@ -9,7 +9,7 @@
             margin: 50px;
         }
         .container {
-            width: 400px;
+            width: 500px;
             margin: 0 auto;
             padding: 20px;
             border: 1px solid #ccc;
@@ -23,7 +23,7 @@
             margin-bottom: 5px;
             font-weight: bold;
         }
-        input {
+        input, select {
             width: 100%;
             padding: 8px;
             box-sizing: border-box;
@@ -39,6 +39,7 @@
             border-radius: 4px;
             cursor: pointer;
             font-size: 16px;
+            margin-top: 10px;
         }
         button:hover {
             background-color: #0b7dda;
@@ -56,11 +57,63 @@
         h2 {
             text-align: center;
         }
+        .roles-section {
+            border: 1px solid #ddd;
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 15px;
+            background-color: #f9f9f9;
+        }
+        .current-roles {
+            margin-bottom: 15px;
+        }
+        .role-item {
+            display: inline-block;
+            background-color: #2196F3;
+            color: white;
+            padding: 5px 10px;
+            border-radius: 3px;
+            margin: 2px;
+        }
+        .role-item button {
+            background-color: #f44336;
+            color: white;
+            border: none;
+            border-radius: 3px;
+            padding: 2px 8px;
+            margin-left: 8px;
+            cursor: pointer;
+            font-size: 12px;
+            width: auto;
+            display: inline;
+        }
+        .role-item button:hover {
+            background-color: #da190b;
+        }
+        .add-role-form {
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px solid #ddd;
+        }
+        .add-role-form select {
+            width: 70%;
+            display: inline-block;
+        }
+        .add-role-form button {
+            width: 25%;
+            display: inline-block;
+            margin-top: 0;
+        }
+        hr {
+            margin: 20px 0;
+        }
     </style>
 </head>
 <body>
 <div class="container">
     <h2>Edit User</h2>
+
+    <!-- Форма редактирования основной информации пользователя -->
     <form th:action="@{/admin/editUser}" method="post" th:object="${user}">
         <input type="hidden" th:field="*{id}"/>
 
@@ -80,9 +133,57 @@
             <label>Age:</label>
             <input type="number" th:field="*{age}" required/>
         </div>
+
+        <h3>Roles</h3>
+        <div class="roles-section">
+            <!-- Выбор ролей через мультиселект -->
+            <div class="form-group">
+                <label>Select Roles:</label>
+                <select name="roleIds" multiple size="3">
+                    <option th:each="role : ${allRoles}"
+                            th:value="${role.id}"
+                            th:text="${role.name}"
+                            th:selected="${user.roles.contains(role)}">
+                    </option>
+                </select>
+                <small>Hold Ctrl (Windows) or Cmd (Mac) to select multiple roles</small>
+            </div>
+        </div>
+
         <button type="submit">Update User</button>
         <a href="/admin" class="cancel">Cancel</a>
     </form>
+
+    <hr/>
+
+    <!-- Отдельные формы для добавления/удаления ролей -->
+    <div class="roles-section">
+        <h3>Current Roles:</h3>
+        <div class="current-roles" th:each="role : ${user.roles}">
+            <div class="role-item">
+                <span th:text="${role.name}"></span>
+                <form th:action="@{/admin/user/{userId}/role/{roleId}/remove(userId=${user.id}, roleId=${role.id})}"
+                      method="post" style="display: inline;">
+                    <button type="submit" onclick="return confirm('Remove this role?')">Remove</button>
+                </form>
+            </div>
+        </div>
+
+        <div class="add-role-form">
+            <h3>Add Role:</h3>
+            <form th:action="@{/admin/user/{userId}/role/add(userId=${user.id})}" method="post">
+                <select name="roleId" required>
+                    <option value="">Select a role...</option>
+                    <option th:each="role : ${allRoles}"
+                            th:value="${role.id}"
+                            th:text="${role.name}"
+                            th:unless="${user.roles.contains(role)}">
+                    </option>
+                </select>
+                <button type="submit">Add Role</button>
+            </form>
+        </div>
+    </div>
 </div>
 </body>
 </html>

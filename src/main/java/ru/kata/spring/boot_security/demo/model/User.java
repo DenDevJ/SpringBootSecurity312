@@ -11,6 +11,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.Table;
+import javax.persistence.CascadeType;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Objects;
@@ -26,7 +27,7 @@ public class User implements UserDetails {
     private String email;
     private String password;
     private int age;
-    @ManyToMany(fetch = FetchType.EAGER)
+    @ManyToMany(fetch = FetchType.LAZY, cascade = {CascadeType.MERGE, CascadeType.PERSIST})
     @JoinTable(
             name = "users_roles",
             joinColumns = @JoinColumn(name = "user_id"),
