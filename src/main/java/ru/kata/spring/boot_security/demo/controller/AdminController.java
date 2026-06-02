@@ -4,15 +4,9 @@ import ru.kata.spring.boot_security.demo.model.User;
 import ru.kata.spring.boot_security.demo.model.Role;
 import ru.kata.spring.boot_security.demo.service.UserService;
 import ru.kata.spring.boot_security.demo.service.RoleService;
-import ru.kata.spring.boot_security.demo.service.UserRoleService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.*;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -22,14 +16,10 @@ public class AdminController {
 
     private final UserService userService;
     private final RoleService roleService;
-    private final UserRoleService userRoleService;  // ДОБАВЛЕНО
 
-    public AdminController(UserService userService,
-                           RoleService roleService,
-                           UserRoleService userRoleService) {  // ИСПРАВЛЕН конструктор
+    public AdminController(UserService userService, RoleService roleService) {
         this.userService = userService;
         this.roleService = roleService;
-        this.userRoleService = userRoleService;
     }
 
     @GetMapping
@@ -49,10 +39,10 @@ public class AdminController {
     @PostMapping("/addUser")
     public String addUser(@ModelAttribute User user,
                           @RequestParam(value = "roleIds", required = false) Set<Long> roleIds) {
-        userService.save(user);
         if (roleIds != null && !roleIds.isEmpty()) {
-            userRoleService.setUserRoles(user.getId(), roleIds);  // ИСПРАВЛЕНО
+            user.setRoles(new HashSet<>(roleService.findAllByIds(roleIds)));
         }
+        userService.save(user);
         return "redirect:/admin";
     }
 
@@ -66,10 +56,10 @@ public class AdminController {
     @PostMapping("/editUser")
     public String editUser(@ModelAttribute User user,
                            @RequestParam(value = "roleIds", required = false) Set<Long> roleIds) {
-        userService.update(user);
         if (roleIds != null && !roleIds.isEmpty()) {
-            userRoleService.setUserRoles(user.getId(), roleIds);  // ИСПРАВЛЕНО
+            user.setRoles(new HashSet<>(roleService.findAllByIds(roleIds)));
         }
+        userService.update(user);
         return "redirect:/admin";
     }
 
@@ -79,15 +69,27 @@ public class AdminController {
         return "redirect:/admin";
     }
 
+    // Добавление роли пользователю (работаем напрямую с User)
     @PostMapping("/user/{userId}/role/{roleId}/add")
     public String addRoleToUser(@PathVariable Long userId, @PathVariable Long roleId) {
-        userRoleService.addRoleToUser(userId, roleId);  // ИСПРАВЛЕНО
+        User user = userService.findById(userId);
+        Role role = roleService.findById(roleId);
+        if (user != null && role != null) {
+            user.getRoles().add(role);
+            userService.update(user);
+        }
         return "redirect:/admin/editUser?id=" + userId;
     }
 
+    // Удаление роли у пользователя
     @PostMapping("/user/{userId}/role/{roleId}/remove")
     public String removeRoleFromUser(@PathVariable Long userId, @PathVariable Long roleId) {
-        userRoleService.removeRoleFromUser(userId, roleId);  // ИСПРАВЛЕНО
+        User user = userService.findById(userId);
+        Role role = roleService.findById(roleId);
+        if (user != null && role != null) {
+            user.getRoles().remove(role);
+            userService.update(user);
+        }
         return "redirect:/admin/editUser?id=" + userId;
     }
 }

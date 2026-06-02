@@ -94,6 +94,4 @@ public class UserServiceImpl implements UserService, UserDetailsService {
         }
         return user;
     }
-
-    // УДАЛИТЬ: addRoleToUser, removeRoleFromUser, setUserRoles
 }
