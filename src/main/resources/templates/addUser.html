@@ -1,8 +1,14 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<html xmlns:th="http://www.thymeleaf.org" lang="ru">
 <head>
     <meta charset="UTF-8">
     <title>Add New User</title>
+
+    <!-- favicon -->
+    <link rel="icon" type="image/x-icon" href="/favicon.ico">
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -69,6 +75,11 @@
             color: #666;
             font-size: 12px;
         }
+        .error {
+            color: red;
+            font-size: 12px;
+            margin-top: 5px;
+        }
     </style>
 </head>
 <body>
@@ -76,7 +87,6 @@
     <h2>Add New User</h2>
 
     <form th:action="@{/admin/addUser}" method="post" th:object="${user}">
-
         <div class="form-group">
             <label>Name:</label>
             <input type="text" th:field="*{name}" required/>
@@ -97,10 +107,9 @@
             <input type="number" th:field="*{age}" required/>
         </div>
 
-        <!-- ДОБАВЛЕН БЛОК С ВЫБОРОМ РОЛЕЙ -->
         <div class="roles-section">
             <label>Roles:</label>
-            <select name="roleIds" multiple size="3">
+            <select name="roleIds" multiple size="3" required>
                 <option th:each="role : ${allRoles}"
                         th:value="${role.id}"
                         th:text="${role.name}">
@@ -111,7 +120,6 @@
 
         <button type="submit">Save User</button>
         <a href="/admin" class="cancel">Cancel</a>
-
     </form>
 </div>
 </body>
