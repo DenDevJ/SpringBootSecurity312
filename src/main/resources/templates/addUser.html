@@ -3,12 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <title>Add New User</title>
-
-    <!-- favicon -->
     <link rel="icon" type="image/x-icon" href="/favicon.ico">
     <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
     <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
-
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -85,28 +82,23 @@
 <body>
 <div class="container">
     <h2>Add New User</h2>
-
     <form th:action="@{/admin/addUser}" method="post" th:object="${user}">
         <div class="form-group">
             <label>Name:</label>
             <input type="text" th:field="*{name}" required/>
         </div>
-
         <div class="form-group">
             <label>Email:</label>
             <input type="email" th:field="*{email}" required/>
         </div>
-
         <div class="form-group">
             <label>Password:</label>
             <input type="password" th:field="*{password}" required/>
         </div>
-
         <div class="form-group">
             <label>Age:</label>
             <input type="number" th:field="*{age}" required/>
         </div>
-
         <div class="roles-section">
             <label>Roles:</label>
             <select name="roleIds" multiple size="3" required>
@@ -117,7 +109,6 @@
             </select>
             <small>Hold Ctrl (Windows) or Cmd (Mac) to select multiple roles</small>
         </div>
-
         <button type="submit">Save User</button>
         <a href="/admin" class="cancel">Cancel</a>
     </form>
